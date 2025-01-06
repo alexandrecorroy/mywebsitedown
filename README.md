@@ -43,6 +43,38 @@ Install DB :
 php bin/console doctrine:schema:create
 ```
 
+Consume Messenger with systemd (example for debian)
+
+```
+sudo nano /etc/systemd/system/messenger-consumer.service
+```
+
+Edit with this data :
+
+```
+[Unit]
+Description=Messenger Consumer for scheduler_default
+After=network.target
+
+[Service]
+User=www-data
+Group=www-data
+WorkingDirectory=/path/to/your/project
+ExecStart=/usr/bin/php /path/to/your/project/bin/console messenger:consume scheduler_default --env=prod --no-interaction -vv
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Configure your new service and lunch it to startup 
+
+```
+sudo systemctl daemon-reload
+sudo systemctl start messenger-consumer
+sudo systemctl enable messenger-consumer
+```
+
 ## Authors
 
 * **Corroy Alexandre** - *Initial work* - [CORROYAlexandre](https://github.com/alexandrecorroy)
