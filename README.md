@@ -25,8 +25,6 @@ Git clone https://github.com/alexandrecorroy/mywebsitedown.git
 
 Update ".env.sample" with your parameters and rename ".env"
 
-```
-
 Install Dependencies :
 
 ```
