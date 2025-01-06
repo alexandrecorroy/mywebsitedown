@@ -1,0 +1,256 @@
+{% extends 'back/base_dashboard.html.twig' %}
+
+{% block title %}
+    MyWebSiteDown : Check your website status Offline or Online
+{% endblock %}
+
+{% block custom_scripts %}
+    <link href="https://cdn.datatables.net/v/bs5/jq-3.6.0/dt-1.13.4/date-1.4.1/r-2.4.1/datatables.min.css" rel="stylesheet"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.4/moment.min.js"></script>
+    <script src="https://cdn.datatables.net/v/bs5/jq-3.6.0/dt-1.13.4/date-1.4.1/r-2.4.1/datatables.min.js"></script>
+    <script src="//cdn.datatables.net/plug-ins/1.13.4/sorting/datetime-moment.js"></script>
+
+    <script>
+
+        var minDate, maxDate;
+
+        $.fn.dataTable.ext.search.push(
+            function( settings, data ) {
+
+                let dateRangeFound = false;
+
+                let min = moment($('#min').val(), 'YYYY/MM/DD HH:mm', true).isValid() ?
+                    moment($('#min').val(), 'YYYY/MM/DD HH:mm').format('YYYYMMDD HH:mm') : "";
+
+                let max = moment($('#max').val(), 'YYYY/MM/DD HH:mm', true).isValid() ?
+                    moment($('#max').val(), 'YYYY/MM/DD HH:mm').format('YYYYMMDD HH:mm') : "";
+
+                if ( max === "" && min === ""  ) {
+                    return true;
+                }
+
+
+                var date = moment( data[2], 'YYYY/MM/DD HH:mm' ).format('YYYYMMDD HH:mm');
+
+                if ( max === "" && min === "" ) {
+                    dateRangeFound = false;
+                } else if ( min <= date && max ==="" ) {
+                    dateRangeFound = true;
+                } else if ( max >= date && min ==="" ) {
+                    dateRangeFound = true;
+                } else if (  min <= date && max >= date ) {
+                    dateRangeFound = true;
+                } else {
+                    dateRangeFound = false;
+                }
+
+                // Show row either search condition is true
+                return dateRangeFound;
+            }
+        );
+
+        var table;
+
+        $(document).ready(function() {
+
+            table = $('#dataTable').DataTable( {
+                dom: 'l<"toolbar">frtip',
+                initComplete: function () {
+                    minDate = new DateTime($('#min'), {
+                        format: 'YYYY/MM/DD HH:mm',
+                        buttons: {
+                            clear: true,
+                        },
+                        firstDayOfWeek: 1,
+                    });
+                    maxDate = new DateTime($('#max'), {
+                        format: 'YYYY/MM/DD HH:mm',
+                        buttons: {
+                            clear: true,
+                        },
+                        firstDayOfWeek: 1,
+                    });
+                },
+                ajax: '{{ path('show_all_ajax_by_schedule', {'id':webLinkSchedule.id}) }}',
+                "pageLength": 20,
+                "lengthMenu":[[20, 50, 200, 500, -1], [20, 50, 200, 500, "All"]],
+                columns: [
+                    {
+                        className:      'product_id',
+                        orderable:      false,
+                        data:           'id',
+                    },
+                    {
+                        orderable:      true,
+                        data:           'status_code',
+                        type:           'num'
+                    },
+                    {
+                        orderable:      true,
+                        data:           'date',
+                        type:           'date-euro'
+                    }
+                ],
+                order: [[0, 'desc']]
+            } );
+
+            // Refilter the table
+            $('#min, #max').on('change', function () {
+                table.draw();
+            });
+
+            var clear = document.getElementById('clear');
+
+            // Ajouter un gestionnaire d'événement au clic sur le bouton
+            clear.addEventListener('click', function() {
+                // Réinitialiser les valeurs des champs d'entrée
+                document.getElementById('min').value = '';
+                document.getElementById('max').value = '';
+                table.draw();
+            });
+
+        } );
+
+    </script>
+{% endblock %}
+
+{% block page_title %}
+    {{ webLinkSchedule.name|capitalize }}
+    {% if webLinkSchedule.active %}
+        <span class="badge rounded-pill bg-success">Active</span>
+    {% else %}
+        <span class="badge rounded-pill bg-danger">Disable</span>
+    {% endif %}
+{% endblock %}
+
+{% block button %}
+    <a href="{{ path('app_dashboard_toggle_email_alert_link', {'id': webLinkSchedule.id}) }}" type="button" class="btn btn-sm btn-outline-info d-flex align-items-center gap-1">
+        {% if webLinkSchedule.emailAlert %}
+            Disable Email Alert
+        {% else %}
+            Enable Email Alert
+        {% endif %}
+    </a>
+
+    <a href="{{ path('app_dashboard_toggle_monitoring_link', {'id': webLinkSchedule.id}) }}" type="button" class="btn btn-sm btn-outline-warning d-flex align-items-center gap-1 mx-2">
+        {% if webLinkSchedule.active %}
+            Disable Monitoring
+        {% else %}
+            Enable Monitoring
+        {% endif %}
+    </a>
+    <a href="{{ path('app_dashboard_delete_link', {'id' : webLinkSchedule.id}) }}" type="button" class="btn btn-sm btn-danger d-flex align-items-center gap-1 ms-3" data-bs-toggle="modal" data-bs-target="#confirmationModal">Delete</a>
+{% endblock %}
+
+{% block dashboard_content %}
+    <div class="text-center small overflow-wrap-anywhere">{{ webLinkSchedule.link }} | Check every {{ webLinkSchedule.cronInSeconds|convert_seconds_to_delay }}</div>
+
+    <div class="container mt-3">
+        <div style="height: 300px; margin-bottom: 80px" class="d-flex flex-column">
+            <h4 class="text-center">Last 7 Days</h4>
+            {{ render_chart(last7DaysWebLinkLineChart) }}
+        </div>
+    </div>
+
+    <div class="container mt-4 d-flex row">
+        <div style="height: 300px; margin-bottom: 80px" class="d-flex flex-column col-12 col-md-6">
+            <h4 class="text-center">Total last 7 Days</h4>
+            {{ render_chart(last7DaysWebLinkDonutsChart) }}
+        </div>
+        <div class="col-12 col-md-6">
+            <h4>HTTP status codes (except {{ webLinkSchedule.statusCodeVerifying }}xx)</h4>
+
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">StatusCode</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Detail</th>
+                </tr>
+                </thead>
+                <tbody
+                {% if last10LinkToFetch|length > 0 %}
+                    {% for weblink in last10LinkToFetch %}
+                        <tr class="table-{{ weblink.statusCode|bootstrap_color }}">
+                            <th scope="row">{{ loop.index }}</th>
+                            <td>{{ weblink.statusCode }}</td>
+                            <td>{{ weblink.dateVisited|date }}</td>
+                            <td>
+                                {% if weblink.webLinkDetail %}
+                                    <a href="{{ path('app_dashboard_view_link_detail', { 'id' : weblink.webLinkDetail.id }) }}">See Detail</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="4">
+                            Congratulations! Nothing to show here!
+                        </td>
+                    </tr>
+
+                {% endif %}
+
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+
+    <div class="table-responsive pt-3 mt-5 border-top mb-5 w-100">
+        <h2>Check all records</h2>
+
+        <div class="row g-3 d-flex flex-column flex-md-row align-items-center justify-content-md-end mb-3">
+            <div class="col-auto align-middle">
+                Filter by date :
+            </div>
+            <div class="col-auto">
+                <input type="text" readonly class="form-control" id="min" name="min" value="min">
+            </div>
+            <div class="col-auto">
+                <input type="text" class="form-control" id="max" name="max" placeholder="max">
+            </div>
+            <div class="col-auto">
+                <button id="clear" class="btn btn-primary">Reset</button>
+            </div>
+        </div>
+
+        <table class="table table-striped table-sm" id="dataTable" style="width:99%">
+            <thead>
+            <tr>
+                <th scope="col" class="text-center">ID</th>
+                <th scope="col" class="text-center">HTTP Status Code</th>
+                <th scope="col" class="text-center">Date</th>
+            </tr>
+            </thead>
+            <tfoot>
+            <tr>
+                <th scope="col" class="text-center">ID</th>
+                <th scope="col" class="text-center">HTTP Status Code</th>
+                <th scope="col" class="text-center">Date</th>
+            </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmationModalLabel">Confirm delete</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete monitoring of : {{ webLinkSchedule.name }} ?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abord</button>
+                    <a href="{{ path('app_dashboard_delete_link', {'id':webLinkSchedule.id}) }}" class="btn btn-danger">Confirm</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

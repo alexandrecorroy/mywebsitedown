@@ -1,0 +1,7 @@
+<h1>Welcome {{ login }} !</h1>
+
+<p>Before using our service, you must validate your email by clicking on this link :</p>
+
+<a href="{{ url('app_validate_account', {'token' : token}) }}">{{ url('app_validate_account', {'token' : token}) }}</a>
+
+<p>The team <a href="https://mywebsitedown.com/">MyWebSiteDown.com</a>.</p>

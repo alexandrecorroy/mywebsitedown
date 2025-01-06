@@ -1,0 +1,80 @@
+{% extends 'back/base_dashboard.html.twig' %}
+
+{% block title %}
+    MyWebSiteDown : Check your website status Offline or Online
+{% endblock %}
+
+{% block page_title %}
+    {{ webLinkSchedule.name|capitalize }}
+
+    <span class="badge rounded-pill bg-{{ webLinkDetail.webLink.statusCode|bootstrap_color }}">
+        {{ webLinkDetail.webLink.statusCode }}
+    </span>
+{% endblock %}
+
+{% block button %}
+    <a href="{{ path('app_dashboard_view_link', {'id': webLinkSchedule.id}) }}" type="button" class="btn btn-sm btn-outline-info d-flex align-items-center gap-1" data-turbo="false">
+        Return To Monitoring
+    </a>
+{% endblock %}
+
+{% block dashboard_content %}
+    <main class="mt-5 px-3">
+        <h1 class="text-break">{{ webLinkSchedule.link }}</h1>
+
+        <div class="alert alert-{{ webLinkDetail.webLink.statusCode|bootstrap_color }}">
+            At {{ webLinkDetail.webLink.dateVisited.format('F j, Y H:i:s') }} your status code was : {{ webLinkDetail.webLink.statusCode }}
+        </div>
+
+    </main>
+
+    <div class="container px-4 py-5">
+
+        <div class="accordion" id="accordionPanelsStayOpenExample">
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
+                        Headers
+                    </button>
+                </h2>
+                <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show">
+                    <div class="accordion-body">
+                        <table class="table">
+                            <tbody>
+                            {% for key, headers in webLinkDetail.headers|json_decode %}
+                                <tr>
+                                    <th scope="row">{{ key|e }}</th>
+                                    <td class="text-break">
+                                        {% for header in headers %}
+                                            {{ header|e }}
+                                        {% endfor %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="false" aria-controls="panelsStayOpen-collapseTwo">
+                        Content
+                    </button>
+                </h2>
+                <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse">
+                    <div class="accordion-body text-break text-start">
+                        {% if webLinkDetail.content is not null %}
+                            {{ webLinkDetail.content|e}}
+                        {% else %}
+                            No content to show
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}

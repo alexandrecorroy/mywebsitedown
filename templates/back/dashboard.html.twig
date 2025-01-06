@@ -1,0 +1,46 @@
+{% extends 'back/base_dashboard.html.twig' %}
+
+{% block title %}
+    MyWebSiteDown : Check your website status Offline or Online
+{% endblock %}
+
+{% block page_title %}Dashboard{% endblock %}
+
+{% block button %}
+    <a href="{{ path('app_dashboard_add_link') }}" type="button" class="btn btn-sm btn-primary d-flex align-items-center gap-1 ms-3">
+        Add a new link to follow
+    </a>
+{% endblock %}
+
+{% block dashboard_content %}
+    <div style="height: 300px; margin-bottom: 80px" class="w-100 d-flex flex-column col-12 col-md-6">
+        <h4 class="text-center">Total last 7 Days</h4>
+        {{ render_chart(last7DaysWebLinkLineByForAllScheduleChart) }}
+    </div>
+
+    <div class="container mt-4 d-flex row align-content-center align-items-center justify-content-center align-self-center">
+        {% for webLinkSchedule in weblinksSchedule %}
+            <div class="card text-bg-{% if webLinkSchedule.active %}success{% else %}danger{% endif %} mb-3 mx-3" style="max-width: 22rem;">
+                <div class="card-header">{{ webLinkSchedule.name|capitalize }}</div>
+                <div class="card-body">
+                    <h5 class="card-title">Monitoring status : {% if webLinkSchedule.active %}enabled{% else %}disabled{% endif %}</h5>
+                    <ul class="dashboard-list list-group list-group-flush">
+                        <li class="list-group-item">Alert {% if webLinkSchedule.emailAlert %}enable{% else %}disable{% endif %} on HTTP Code not {{ webLinkSchedule.statusCodeVerifying }}xx</li>
+                        <li class="list-group-item">Check every {{ webLinkSchedule.cronInSeconds|convert_seconds_to_delay }}</li>
+                        {% if webLinkSchedule.webLinks.last %}
+                            <li class="list-group-item">Last check <span class="badge text-bg-{{ webLinkSchedule.webLinks.last.statusCode|bootstrap_color }} rounded-pill">{{ webLinkSchedule.webLinks.last.statusCode }}</span> at {{ webLinkSchedule.webLinks.last.dateVisited|date }}</li>
+                        {% endif %}
+                    </ul>
+                    <p class="mt-3">
+                        <a href="{{ path('app_dashboard_view_link', {'id': webLinkSchedule.id}) }}" type="button" class="btn btn-warning">See details</a>
+                    </p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="container mt-4 d-flex row justify-content-center">
+        Current date : {{ date('now')|date }} UTC (may differ from your TimeZone)
+    </div>
+
+{% endblock %}

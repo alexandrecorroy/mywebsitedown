@@ -1,0 +1,109 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    MyWebSiteDown : Check your website status Offline or Online
+{% endblock %}
+
+{% block header %}
+
+    <header class="mb-auto pt-2 pt-md-0">
+        <div>
+            <a href="{{ path('index') }}"><img class="float-md-start mb-0" width="280px" style="border-radius: 5px" alt="MyWebSiteDown.com Logo" src="{{ asset('img/mywebsitedown-logo.png') }}" /></a>
+            <nav class="nav nav-masthead justify-content-center float-md-end">
+                <a class="nav-link fw-bold py-1 px-0 active" aria-current="page" href="{{ path('index') }}">Home</a>
+                {% if app.user %}
+                    <a class="nav-link fw-bold py-1 px-0" href="{{ path('app_dashboard_dashboard') }}">Dashboard</a>
+                {% else %}
+                    <a class="nav-link fw-bold py-1 px-0" href="{{ path('app_login') }}">Login</a>
+                    <a class="nav-link fw-bold py-1 px-0" href="{{ path('app_register') }}">Register</a>
+                {% endif %}
+                <a class="nav-link fw-bold py-1 px-0" href="{{ path('contact') }}">Contact</a>
+            </nav>
+        </div>
+    </header>
+
+{% endblock %}
+
+
+{% block body %}
+
+    <main class="mt-5 px-3">
+        <h1>Check your website status</h1>
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-danger">
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        <div class="col-12 col-md-9 mx-auto">
+            {{ form(form) }}
+        </div>
+    </main>
+
+    <div class="container px-4 py-5">
+
+        <div class="row row-cols-1 row-cols-md-2 g-5 py-5">
+            <div class="col d-flex flex-column align-items-start gap-2">
+
+                <ul class="list-group w-100">
+                    {% for webLink in last10webLinks %}
+                        <a href="{{ path('link_show', { 'slug': webLink.slug }) }}" class="text-break list-group-item d-flex justify-content-between align-items-center text-start">
+                            {{ webLink.link }}
+                            <span class="badge text-bg-{{ webLink.statusCode|bootstrap_color}} rounded-pill">{{ webLink.statusCode }}</span>
+                        </a>
+                    {% endfor %}
+                </ul>
+
+            </div>
+
+            <div class="col d-flex flex-column justify-content-around flex-wrap">
+                <div class="row row-cols-1 row-cols-sm-2 g-4">
+                    <div class="col d-flex flex-column gap-2">
+                        <div class="feature-icon-small d-inline-flex align-items-center justify-content-center align-self-center text-bg-light bg-gradient fs-4 rounded-3">
+                            <svg class="bi" width="1em" height="1em">
+                                <use xlink:href="#collection"></use>
+                            </svg>
+                        </div>
+                        <h4 class="fw-semibold mb-0 text-body-emphasis">100% FREE</h4>
+                        <p class="text-body-secondary">You not need credit card to use our service.</p>
+                    </div>
+
+                    <div class="col d-flex flex-column gap-2">
+                        <div class="feature-icon-small d-inline-flex align-items-center justify-content-center align-self-center text-bg-light bg-gradient fs-4 rounded-3">
+                            <svg class="bi" width="1em" height="1em">
+                                <use xlink:href="#gear-fill"></use>
+                            </svg>
+                        </div>
+                        <h4 class="fw-semibold mb-0 text-body-emphasis">Automatic</h4>
+                        <p class="text-body-secondary">You receive automatic email alert if your website is down.</p>
+                    </div>
+
+                    <div class="col d-flex flex-column gap-2">
+                        <div class="feature-icon-small d-inline-flex align-items-center justify-content-center align-self-center text-bg-light bg-gradient fs-4 rounded-3">
+                            <svg class="bi" width="1em" height="1em">
+                                <use xlink:href="#speedometer"></use>
+                            </svg>
+                        </div>
+                        <h4 class="fw-semibold mb-0 text-body-emphasis">Multisite</h4>
+                        <p class="text-body-secondary">You can add up to 10 website in only one account.</p>
+                    </div>
+
+                    <div class="col d-flex flex-column gap-2">
+                        <div class="feature-icon-small d-inline-flex align-items-center justify-content-center align-self-center text-bg-light bg-gradient fs-4 rounded-3">
+                            <svg class="bi" width="1em" height="1em">
+                                <use xlink:href="#table"></use>
+                            </svg>
+                        </div>
+                        <h4 class="fw-semibold mb-0 text-body-emphasis">Charts</h4>
+                        <p class="text-body-secondary">Go back in time with our website status charts.</p>
+                    </div>
+                </div>
+                <p class="text-body-secondary mx-auto mt-3">Why wait more ? Just create an account, it's free!</p>
+                {% if not app.user %}
+                    <a href="{{ path('app_register') }}" class="btn btn-light btn-lg mx-auto">Register Now</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

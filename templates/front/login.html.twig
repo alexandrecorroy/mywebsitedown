@@ -1,0 +1,103 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    MyWebSiteDown : Check your website status Offline or Online
+{% endblock %}
+
+{% block styles %}
+    <style>
+        body, html{
+            height: 100%;
+
+        }
+
+        .form-signin {
+            max-width: 330px;
+            padding: 15px;
+        }
+
+        .form-signin .form-floating:focus-within {
+            z-index: 2;
+        }
+
+        .form-signin input[type="text"] {
+            margin-bottom: -1px;
+            border-bottom-right-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+
+        .form-signin input[type="password"] {
+            margin-bottom: 10px;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
+
+    </style>
+{% endblock %}
+
+{% block header %}
+
+    <header class="mb-auto pt-2 pt-md-0">
+        <div>
+            <a href="{{ path('index') }}"><img class="float-md-start mb-0" width="280px" style="border-radius: 5px" alt="MyWebSiteDown.com Logo" src="{{ asset('img/mywebsitedown-logo.png') }}" /></a>
+            <nav class="nav nav-masthead justify-content-center float-md-end">
+                <a class="nav-link fw-bold py-1 px-0" aria-current="page" href="{{ path('index') }}">Home</a>
+                {% if app.user %}
+                    <a class="nav-link fw-bold py-1 px-0" href="{{ path('app_dashboard_dashboard') }}">Dashboard</a>
+                {% else %}
+                    <a class="nav-link fw-bold py-1 px-0 active" href="{{ path('app_login') }}">Login</a>
+                    <a class="nav-link fw-bold py-1 px-0" href="{{ path('app_register') }}">Register</a>
+                {% endif %}
+                <a class="nav-link fw-bold py-1 px-0" href="{{ path('contact') }}">Contact</a>
+            </nav>
+        </div>
+    </header>
+
+{% endblock %}
+
+{% block body %}
+
+    <main class="mt-5 px-3 align-content-center" style="height: 100%">
+        <h1 class="text-break">Login</h1>
+
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-danger">
+                {{ message }}
+            </div>
+        {% endfor %}
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success">
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        <form action="{{ path('app_login') }}" method="post" class="form-signin w-100 m-auto mb-5 my-5">
+
+            {% for message in app.flashes('notice') %}
+                <div class="alert alert-{{ message['alert'] }} fade show" role="alert">
+                    {{ message['message'] }}
+                </div>
+            {% endfor %}
+            {% if error %}
+                <div class="text-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+            {% endif %}
+
+            <div class="form-floating">
+                <input type="text" class="form-control" id="username" name="_username" placeholder="username" value="{{ last_username }}">
+                <label for="_username">Login</label>
+            </div>
+            <div class="form-floating">
+                <input type="password" class="form-control" id="password" name="_password" placeholder="Password">
+                <label for="password">Password</label>
+            </div>
+
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+            <input type="hidden" name="_target_path" value="{{ path('app_redirect_after_login') }}">
+
+            <button class="w-100 btn btn-lg btn-info" type="submit">Log In</button>
+            <a class="link-bottom-submit" href="{{ path('app_forgot_password') }}">Forgot password ?</a>
+        </form>
+
+    </main>
+
+{% endblock %}

@@ -1,0 +1,86 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    MyWebSiteDown : Check your website status Offline or Online
+{% endblock %}
+
+{% block styles %}
+    <style>
+        body, html{
+            height: 100%;
+
+        }
+
+    </style>
+{% endblock %}
+
+{% block header %}
+
+    <header class="mb-auto pt-2 pt-md-0">
+        <div>
+            <a href="{{ path('index') }}"><img class="float-md-start mb-0" width="280px" style="border-radius: 5px" alt="MyWebSiteDown.com Logo" src="{{ asset('img/mywebsitedown-logo.png') }}" /></a>
+            <nav class="nav nav-masthead justify-content-center float-md-end">
+                <a class="nav-link fw-bold py-1 px-0" aria-current="page" href="{{ path('index') }}">Home</a>
+                {% if app.user %}
+                    <a class="nav-link fw-bold py-1 px-0" href="{{ path('app_dashboard_dashboard') }}">Dashboard</a>
+                {% else %}
+                    <a class="nav-link fw-bold py-1 px-0" href="{{ path('app_login') }}">Login</a>
+                    <a class="nav-link fw-bold py-1 px-0 active" href="{{ path('app_register') }}">Register</a>
+                {% endif %}
+                <a class="nav-link fw-bold py-1 px-0" href="{{ path('contact') }}">Contact</a>
+            </nav>
+        </div>
+    </header>
+
+{% endblock %}
+
+{% block body %}
+
+    <main class="mt-5 px-3" style="height: 100%">
+        <h1 class="text-break">Register</h1>
+
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-danger">
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        <div class="mt-5 col-12 col-md-6 mx-auto">
+{#            {{ form(form) }}#}
+            {{ form_start(form, {'attr': {'class': 'form'}}) }}
+            <div class="form-group mb-3">
+                {{ form_label(form.email, 'Email Address', {'label_attr': {'class': 'form-label fw-bold float-left'}}) }}
+                {{ form_widget(form.email, {'attr': {'class': 'form-control', 'placeholder': 'Enter your email'}}) }}
+                {% if form.email.vars.errors|length > 0 %}
+                    <div class="invalid-feedback d-block">
+                        {{ form_errors(form.email) }}
+                    </div>
+                {% endif %}
+            </div>
+            <div class="form-group mb-3">
+                {{ form_label(form.password.first, 'Password', {'label_attr': {'class': 'form-label fw-bold float-left'}}) }}
+                {{ form_widget(form.password.first, {'attr': {'class': 'form-control', 'placeholder': 'Enter your password'}}) }}
+                {% if form.password.first.vars.errors|length > 0 %}
+                    <div class="invalid-feedback d-block">
+                        {{ form_errors(form.password.first) }}
+                    </div>
+                {% endif %}
+            </div>
+            <div class="form-group mb-3">
+                {{ form_label(form.password.second, 'Confirm Password', {'label_attr': {'class': 'form-label fw-bold float-left'}}) }}
+                {{ form_widget(form.password.second, {'attr': {'class': 'form-control', 'placeholder': 'Confirm your password'}}) }}
+                {% if form.password.second.vars.errors|length > 0 %}
+                    <div class="invalid-feedback d-block">
+                        {{ form_errors(form.password.second) }}
+                    </div>
+                {% endif %}
+            </div>
+            <div class="form-group text-center">
+                {{ form_widget(form.save, {'attr': {'class': 'btn btn-primary w-50 mt-2'}}) }}
+            </div>
+            {{ form_end(form) }}
+        </div>
+
+    </main>
+
+{% endblock %}
