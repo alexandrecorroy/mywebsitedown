@@ -1,6 +1,6 @@
 # MyWebSiteDown
 
-Check your website status and send email alert if HTTP Status change on Symfony 7.2
+Check your website status and send email alert if HTTP Status change on Symfony 7.1.*
 
 ## Getting Started
 
