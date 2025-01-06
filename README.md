@@ -34,13 +34,13 @@ composer install
 Create DB :
 
 ```
-php bin/console doctrine:schema:create
+php bin/console doctrine:database:create
 ```
 
 Install DB :
 
 ```
-php bin/console doctrine:migration:migrate
+php bin/console doctrine:schema:create
 ```
 
 ## Authors
