@@ -2,8 +2,8 @@
 
 <p>At {{ webLink.dateVisited|date }} your http status code was : {{ webLink.statusCode }}</p>
 
-<p>You can see detail <a href="https://www.mywebsitedown.com/{{ path('app_dashboard_view_link', {'id' : webLink.webLinkSchedule.id }) }}">https://www.mywebsitedown.com/{{ path('app_dashboard_view_link', {'id' : webLink.webLinkSchedule.id }) }}</a></p>
+<p>You can see detail <a href="https://www.mywebsitedown.com{{ path('app_dashboard_view_link', {'id' : webLink.webLinkSchedule.id }) }}">https://www.mywebsitedown.com{{ path('app_dashboard_view_link', {'id' : webLink.webLinkSchedule.id }) }}</a></p>
 
-<p>You will not receive other emails until you clear the alert in the dashboard. Go in <a href="https://www.mywebsitedown.com/{{ path('app_dashboard_view_link', {'id' : webLink.webLinkSchedule.id }) }}">{{ webLink.webLinkSchedule.name }} monitoring</a> and click on "Enable Email Alert"</p>
+<p>You will not receive other emails until you clear the alert in the dashboard. Go in <a href="https://www.mywebsitedown.com{{ path('app_dashboard_view_link', {'id' : webLink.webLinkSchedule.id }) }}">{{ webLink.webLinkSchedule.name }} monitoring</a> and click on "Enable Email Alert"</p>
 
 <p>The team <a href="https://www.mywebsitedown.com/">MyWebSiteDown.com</a>.</p>
