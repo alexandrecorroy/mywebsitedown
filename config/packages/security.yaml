@@ -43,7 +43,6 @@ security:
     access_control:
          - { path: ^/dashboard, roles: ROLE_USER }
          - { path: ^/dashboard/admin, roles: ROLE_ADMIN }
-         - { path: ^/dashboard/super_admin, roles: ROLE_SUPER_ADMIN }
 
 when@test:
     security:

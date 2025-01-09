@@ -39,4 +39,14 @@ final class UserRepository extends ServiceEntityRepository implements PasswordUp
         $this->getEntityManager()->persist($user);
         $this->getEntityManager()->flush();
     }
+
+    public function findByExcludingRoleAdminFallback(): array
+    {
+        $users = $this->findAll();
+
+        return array_filter($users, function ($user) {
+            return !in_array('ROLE_ADMIN', $user->getRoles(), true);
+        });
+    }
+
 }
