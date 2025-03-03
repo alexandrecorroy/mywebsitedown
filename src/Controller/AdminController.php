@@ -29,8 +29,6 @@ final class AdminController extends AbstractController
     {
         $userEmail = $user->getEmail();
 
-        $entityManager->remove($user);
-
         $userSchedules = $user->getWebLinkSchedules();
 
         foreach ($userSchedules as $schedule)
@@ -43,6 +41,29 @@ final class AdminController extends AbstractController
         $entityManager->flush();
 
         $this->addFlash('success', 'User '.$userEmail.' has been correctly deleted!');
+
+        return $this->redirectToRoute('app_dashboard_admin_list_users');
+    }
+
+    #[Route('/delete_inactive_users/', name: 'app_dashboard_admin_delete_inactive_users')]
+    public function deleteInactiveUsers(UserRepository $userRepository, EntityManagerInterface $entityManager): Response
+    {
+
+        $inactiveUsers = $userRepository->findBy(['active' => 0]);
+
+        if($inactiveUsers)
+        {
+            foreach ($inactiveUsers as $user)
+            {
+                $entityManager->remove($user);
+            }
+
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Inactive Users has been correctly deleted!');
+        } else {
+            $this->addFlash('info', 'No inactive users in database!');
+        }
 
         return $this->redirectToRoute('app_dashboard_admin_list_users');
     }
