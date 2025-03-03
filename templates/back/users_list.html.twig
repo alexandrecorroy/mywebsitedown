@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block button %}
-    <a href="{{ path('app_dashboard_admin_delete_inactive_users') }}" type="button" class="btn btn-sm btn-danger d-flex align-items-center gap-1 ms-3" data-bs-toggle="modal" data-bs-target="#confirmationModal">Delete all inactive users</a>
+    <a href="#" data-bs-href="{{ path('app_dashboard_admin_delete_inactive_users') }}" type="button" class="btn btn-sm btn-danger d-flex align-items-center gap-1 ms-3" data-bs-toggle="modal" data-bs-target="#confirmationModal">Delete all inactive users</a>
 {% endblock %}
 
 {% block custom_scripts %}
