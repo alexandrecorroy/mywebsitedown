@@ -2,6 +2,8 @@
 
 Check your website status and send email alert if HTTP Status change on Symfony 7.1.*
 
+![Description de l’image](docs/screenshot-home.png)
+
 ## Getting Started
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
@@ -74,6 +76,23 @@ sudo systemctl daemon-reload
 sudo systemctl start messenger-consumer
 sudo systemctl enable messenger-consumer
 ```
+ 
+### Installing with Docker
+
+```
+docker-compose up -d
+```
+
+### Fixtures 
+
+Load Fixtures :
+
+```
+php bin/console doctrine:fixtures:load
+```
+
+Default user login : user@example.com / user
+Default admin login : admin@example.com / admin
 
 ## Authors
 
