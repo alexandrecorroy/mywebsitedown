@@ -92,6 +92,7 @@ php bin/console doctrine:fixtures:load
 ```
 
 Default user login : user@example.com / user
+
 Default admin login : admin@example.com / admin
 
 ## Authors
